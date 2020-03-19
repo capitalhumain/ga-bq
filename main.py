@@ -1,16 +1,13 @@
-#!/usr/bin/env python
-
-import webapp2
-import json
-import string
 import base64
-from google.appengine.api import taskqueue
-from urllib import urlencode
-from urlparse import urlparse
-from urlparse import parse_qs
+import json
 import logging
-import time
 import re
+import string
+import time
+from urllib import urlencode
+from urlparse import parse_qs, urlparse
+import webapp2
+from google.appengine.api import taskqueue
 
 
 class MainHandler(webapp2.RequestHandler):
@@ -35,7 +32,7 @@ class MainHandler(webapp2.RequestHandler):
         'ec': 'eventInfo.eventCategory',
         'ea': 'eventInfo.eventAction',
         'el': 'eventInfo.eventLabel',
-        'ev': 'eventInfo.eventValue',
+        'ev': 'eventInfo.eventValue'
     }
 
     def process_ga_params(self, params):
@@ -89,7 +86,6 @@ class MainHandler(webapp2.RequestHandler):
                 if parsed_query_string:
                     params['dp'] += '?' + urlencode(parsed_query_string)
 
-
         for key, value in self.params_mapping.iteritems():
             if key in self.request.GET:
                 data = self.map_params(data, value, params[key])
@@ -100,7 +96,8 @@ class MainHandler(webapp2.RequestHandler):
             if res:
                 if 'customMetrics' not in data:
                     data['customMetrics'] = []
-                data['customMetrics'].append({'index':res.group(1),'value':value})
+                data['customMetrics'].append(
+                    {'index': res.group(1), 'value': value})
 
         a = re.compile("^cd([1-9][0-9]*)")
         for key, value in self.request.GET.iteritems():
@@ -108,16 +105,16 @@ class MainHandler(webapp2.RequestHandler):
             if res:
                 if 'customDimensions' not in data:
                     data['customDimensions'] = []
-                data['customDimensions'].append({'index':res.group(1),'value':value})
+                data['customDimensions'].append(
+                    {'index': res.group(1), 'value': value})
 
         data['device']['userAgent'] = self.request.headers.get('User-Agent')
         data['timestamp'] = int(time.time())
-        data['ip']=self.request.remote_addr
+        data['ip'] = self.request.remote_addr
 
         return data
 
     def get(self):
-
 
         data = self.process_ga_params(self.request.GET)
 
@@ -129,7 +126,8 @@ class MainHandler(webapp2.RequestHandler):
 
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.headers['Content-Type'] = 'image/gif'
-        self.response.write(base64.b64decode('R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw=='))
+        self.response.write(base64.b64decode(
+            'R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw=='))
 
     def map_params(self, data, key, value):
         str_arr = string.split(key, '.')
@@ -144,6 +142,4 @@ class MainHandler(webapp2.RequestHandler):
         return data
 
 
-app = webapp2.WSGIApplication([
-    ('/collect', MainHandler)
-], debug=True)
+app = webapp2.WSGIApplication([('/collect', MainHandler)], debug=True)

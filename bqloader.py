@@ -1,14 +1,15 @@
-from oauth2client.appengine import AppAssertionCredentials
+import logging
 import httplib2
 from apiclient import discovery
-import logging
+from oauth2client.appengine import AppAssertionCredentials
+
 
 class BQLoader():
     project_id = ''
-    dataset_id = 'test'
-    table_id = 'gadatapy4'
+    dataset_id = ''
+    table_id = ''
 
-    table_schema= [
+    table_schema = [
         {
             "name": "clientId",
             "type": "STRING"
@@ -191,9 +192,10 @@ class BQLoader():
         )
         self.http = credentials.authorize(httplib2.Http())
         self.bigquery = discovery.build('bigquery', 'v2', http=self.http)
-    def insert_rows(self,rows,stop_recursion = False):
 
-        body = {"rows":rows}
+    def insert_rows(self, rows):
+
+        body = {"rows": rows}
 
         response = self.bigquery.tabledata().insertAll(
             projectId=self.project_id,
@@ -201,14 +203,17 @@ class BQLoader():
             tableId=self.table_id,
             body=body).execute()
 
-        # TODO add response check
-
     def create_table(self):
         table_ref = {'tableId': self.table_id,
                      'datasetId': self.dataset_id,
                      'projectId': self.project_id}
-        table = {'tableReference': table_ref, 'schema':{'fields':self.table_schema}}
+        table = {'tableReference': table_ref,
+                 'timePartitioning': {'type': 'DAY'},
+                 'schema': {'fields': self.table_schema}}
 
         table = self.bigquery.tables().insert(
-            body=table, datasetId=self.dataset_id, projectId=self.project_id).execute()
+            body=table,
+            datasetId=self.dataset_id,
+            projectId=self.project_id).execute()
+
         logging.info(table)
