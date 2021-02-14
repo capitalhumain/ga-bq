@@ -22,7 +22,7 @@ class MainHandler(webapp2.RequestHandler):
             rows=[]
 
             for task in tasks:
-                rows.append({'insertId': task.payload[:9999], 'json':json.loads(task.payload)})
+                rows.append({'insertId': task.payload, 'json':json.loads(task.payload)})
 
             logging.info(rows)
 
