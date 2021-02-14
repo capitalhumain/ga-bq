@@ -9,11 +9,11 @@ Stream raw hit-level Google Analytics data into BigQuery
 1. Download and install Google App Engine python SDK https://cloud.google.com/appengine/downloads
 1. git clone https://github.com/lnklnklnk/ga-bq.git
 1. Create new app from source in Google SDK
-1. Add app-id in app.yaml
+1. Set gcloud project: `gcloud config set project your-project`
 1. Change gifPath in js/gabq.js to ga-tracker-dot-[your-project].appspot.com/collect
-1. Set app_id, dataset_id, table_id in bqloader.py
-1. Deploy application
-1. Visit ga-tracker-dot-[your-project].appspot.com/tasks/create_bq_table to create BigQuery table
+1. Set project_id (`your-project`), dataset_id (`from step 2`), table_id in bqloader.py
+1. Deploy application: `gcloud app deploy app.yaml`
+1. Visit ga-tracker-dot-[your-project].appspot.com/tasks/create_bq_table to create BigQuery table. (Expected response if everything goes well is simply an `ok`)
 1. Include plugin on your website. Add line: `<script async src="http://ga-tracker-dot-[your-project].appspot.com/js/gabq.js"></script>` after GA code and `ga('require', 'gabqplugin');` after `ga('create',..)`
 1. Now you raw GA data collects in BigQuery table
 
@@ -55,5 +55,5 @@ Take in mind that there is an limit - you can not lease more than 1000 rows from
 If you don't see your `pull-queue` queue in the Cloud Tasks underneath Pull queues display on the developer console, try deploying the queue config explicitly:
 
 ```
-gcloud app deploy queue.yaml --project [your-project]
+gcloud app deploy queue.yaml
 ```

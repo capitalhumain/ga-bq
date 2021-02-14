@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import webapp2
 from bqloader import BQLoader
 
@@ -10,8 +8,6 @@ class MainHandler(webapp2.RequestHandler):
         bq_loader.create_table()
 
         self.response.write('ok')
-
-
 
 
 app = webapp2.WSGIApplication([
